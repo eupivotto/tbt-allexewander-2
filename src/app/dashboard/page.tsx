@@ -135,7 +135,7 @@ export default function OverviewPage() {
                   contentStyle={{ background: "#130000", border: "1px solid #ffffff22", borderRadius: 8 }}
                   labelStyle={{ color: "#fff" }}
                   itemStyle={{ color: "#ccc" }}
-                  formatter={(v: number) => [`${v} mesas`, ""]}
+                  formatter={(v) => [`${v ?? 0} mesas`, ""]}
                 />
                 <Legend
                   iconType="circle"
@@ -164,7 +164,7 @@ export default function OverviewPage() {
                 <Tooltip
                   contentStyle={{ background: "#130000", border: "1px solid #ffffff22", borderRadius: 8 }}
                   itemStyle={{ color: "#ccc" }}
-                  formatter={(v: number) => [fmt(v), ""]}
+                  formatter={(v) => [fmt(Number(v ?? 0)), ""]}
                 />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {barData.map((entry, i) => (
