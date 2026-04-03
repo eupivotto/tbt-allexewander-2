@@ -24,6 +24,7 @@ export function TableMap({ tables, onTableClick }: TableMapProps) {
     const isReserved = table.status === 'reserved';
     const isPaid = table.status === 'paid';
 
+    const isAvailable = table.status === 'available';
     let bgClass = "bg-white/10 hover:bg-white/20 border-white/20 text-white";
     if (isReserved) bgClass = "bg-yellow-500/20 hover:bg-yellow-500/30 border-yellow-500/50 text-yellow-200";
     if (isPaid) bgClass = "bg-red-900/40 hover:bg-red-900/60 border-red-500/50 text-red-200";
@@ -32,7 +33,7 @@ export function TableMap({ tables, onTableClick }: TableMapProps) {
       <button
         key={num}
         onClick={() => onTableClick(table)}
-        className={`relative flex items-center justify-center w-12 h-12 rounded-lg border-2 font-bold text-sm transition-all active:scale-95 ${bgClass} ${extraClass}`}
+        className={`relative flex items-center justify-center w-12 h-12 rounded-lg border-2 font-bold text-sm transition-all active:scale-95 ${bgClass} ${isAvailable ? "table-available" : ""} ${extraClass}`}
       >
         {String(num).padStart(2, '0')}
         {table.status !== 'available' && (
