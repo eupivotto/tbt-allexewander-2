@@ -1,40 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { Lock, Mail, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { login } from "@/app/actions/auth";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const USERS = [
-    { email: "allex@allexewander.com", password: "111111" },
-    { email: "wander@allexewander.com", password: "111111" },
-  ];
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const form = e.currentTarget;
-    const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim().toLowerCase();
-    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
-
-    const valid = USERS.find(u => u.email === email && u.password === password);
-
-    setTimeout(() => {
-      setLoading(false);
-      if (valid) {
-        router.push("/dashboard");
-      } else {
-        setError("Email ou senha incorretos.");
-      }
-    }, 600);
-  };
+  const [state, action, pending] = useActionState(login, undefined);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
@@ -42,7 +14,7 @@ export default function LoginPage() {
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-red-900/20 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
-        
+
         <div className="relative z-10">
           <div className="flex justify-center mb-8">
             <Image
@@ -58,7 +30,7 @@ export default function LoginPage() {
             Área de administradores e vendas
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form action={action} className="space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-200 ml-1">Email</label>
               <div className="relative">
@@ -91,18 +63,18 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {error && (
+            {state?.error && (
               <div className="p-3 text-sm text-red-200 bg-red-900/50 border border-red-500/30 rounded-lg">
-                {error}
+                {state.error}
               </div>
             )}
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={pending}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-gold/10 text-sm font-bold text-deep-red bg-gold hover:bg-gold-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-gold transition-all duration-200 disabled:opacity-70"
             >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar Painel"}
+              {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar Painel"}
             </button>
           </form>
         </div>

@@ -6,6 +6,7 @@ export interface TableData {
   table_number: number;
   status: TableStatus;
   buyer_name?: string;
+  buyer_phone?: string;
   price?: number;
 }
 

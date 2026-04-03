@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { TableData, TableStatus } from "@/components/TableMap";
-import { X, Save, ChevronDown } from "lucide-react";
+import { X, Save, ChevronDown, Loader2, Phone } from "lucide-react";
 
 interface TableModalProps {
   table: TableData;
   onClose: () => void;
   onSave: (table: TableData) => void;
+  saving?: boolean;
 }
 
-export function TableModal({ table, onClose, onSave }: TableModalProps) {
+export function TableModal({ table, onClose, onSave, saving = false }: TableModalProps) {
   const [formData, setFormData] = useState<TableData>({
     ...table,
     buyer_name: table.buyer_name || "",
+    buyer_phone: table.buyer_phone || "",
     price: table.price || 0,
   });
 
@@ -84,6 +86,22 @@ export function TableModal({ table, onClose, onSave }: TableModalProps) {
           </div>
 
           <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-300">Telefone do Comprador</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                <Phone className="h-4 w-4" />
+              </div>
+              <input
+                type="tel"
+                value={formData.buyer_phone}
+                onChange={(e) => setFormData({ ...formData, buyer_phone: e.target.value })}
+                className="block w-full pl-10 pr-4 py-3 bg-[#1a0a0a] border border-white/20 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 transition-all"
+                placeholder="(00) 00000-0000"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-medium text-gray-300">Valor Pago (R$)</label>
             <input
               type="number"
@@ -99,10 +117,11 @@ export function TableModal({ table, onClose, onSave }: TableModalProps) {
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-lg shadow-gold/10 text-deep-red font-bold bg-gold hover:bg-gold-light focus:outline-none focus:ring-2 focus:ring-gold transition-all duration-200"
+              disabled={saving}
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-lg shadow-gold/10 text-deep-red font-bold bg-gold hover:bg-gold-light focus:outline-none focus:ring-2 focus:ring-gold transition-all duration-200 disabled:opacity-70"
             >
-              <Save className="w-5 h-5" />
-              Salvar Alterações
+              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+              {saving ? "Salvando..." : "Salvar Alterações"}
             </button>
           </div>
         </form>
