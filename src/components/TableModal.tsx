@@ -31,7 +31,7 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-md bg-[#130000] border border-white/10 rounded-2xl p-6 shadow-2xl">
+      <div className="relative w-full max-w-md bg-[#130000] border border-white/10 rounded-2xl p-6 shadow-2xl max-h-[90dvh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-white tracking-tight">
             Mesa <span className="text-gold-light">{table.table_number}</span>

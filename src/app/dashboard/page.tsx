@@ -107,9 +107,9 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div className="flex items-center gap-3 mb-8">
-          <LayoutDashboard className="w-8 h-8 text-gold" />
-          <h1 className="text-4xl font-extrabold text-white tracking-tight uppercase">Visão Geral</h1>
+        <div className="flex items-center gap-3 mb-6">
+          <LayoutDashboard className="w-6 h-6 md:w-8 md:h-8 text-gold" />
+          <h1 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase">Visão Geral</h1>
         </div>
 
         {loading ? (
