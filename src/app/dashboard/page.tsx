@@ -1,154 +1,226 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TableMap, TableData } from "@/components/TableMap";
-import { TableModal } from "@/components/TableModal";
-import { LogOut, LayoutDashboard, Loader2 } from "lucide-react";
-import Image from "next/image";
 import { supabase } from "@/lib/supabase";
-import { logout } from "@/app/actions/auth";
+import { TableData } from "@/components/TableMap";
+import { Loader2, TrendingUp, CircleDollarSign, TableProperties, Clock } from "lucide-react";
+import {
+  PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from "recharts";
 
-export default function DashboardPage() {
+const TOTAL_TABLES = 32;
+
+export default function OverviewPage() {
   const [tables, setTables] = useState<TableData[]>([]);
-  const [selectedTable, setSelectedTable] = useState<TableData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     async function fetchTables() {
       const { data, error } = await supabase
         .from("tables")
-        .select("table_number, status, buyer_name, buyer_phone, price")
-        .order("table_number");
-
-      if (!error && data) {
-        setTables(data as TableData[]);
-      }
+        .select("table_number, status, price");
+      if (!error && data) setTables(data as TableData[]);
       setLoading(false);
     }
-
     fetchTables();
 
     const channel = supabase
-      .channel("tables-realtime")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "tables" },
-        (payload) => {
-          const updated = payload.new as TableData;
-          setTables((prev) =>
-            prev.map((t) =>
-              t.table_number === updated.table_number ? updated : t
-            )
-          );
-        }
-      )
+      .channel("overview-realtime")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "tables" }, (payload) => {
+        const updated = payload.new as TableData;
+        setTables(prev => prev.map(t => t.table_number === updated.table_number ? updated : t));
+      })
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const available = tables.filter((t) => t.status === "available").length;
-  const reserved = tables.filter((t) => t.status === "reserved").length;
-  const paid = tables.filter((t) => t.status === "paid").length;
+  const available = tables.filter(t => t.status === "available").length;
+  const reserved  = tables.filter(t => t.status === "reserved").length;
+  const paid      = tables.filter(t => t.status === "paid").length;
 
-  const handleTableClick = (table: TableData) => {
-    setSelectedTable(table);
-  };
+  const totalRevenue  = tables.filter(t => t.status === "paid").reduce((s, t) => s + (t.price ?? 0), 0);
+  const pendingRevenue = tables.filter(t => t.status === "reserved").reduce((s, t) => s + (t.price ?? 0), 0);
+  const soldPct = TOTAL_TABLES > 0 ? Math.round((paid / TOTAL_TABLES) * 100) : 0;
 
-  const handleSaveModal = async (updatedTable: TableData) => {
-    setSaving(true);
+  const pieData = [
+    { name: "Disponíveis", value: available, color: "#ffffff33" },
+    { name: "Reservadas",  value: reserved,  color: "#eab308" },
+    { name: "Pagas",       value: paid,       color: "#ef4444" },
+  ].filter(d => d.value > 0);
 
-    const { error } = await supabase
-      .from("tables")
-      .update({
-        status: updatedTable.status,
-        buyer_name: updatedTable.buyer_name ?? null,
-        buyer_phone: updatedTable.buyer_phone ?? null,
-        price: updatedTable.price ?? null,
-      })
-      .eq("table_number", updatedTable.table_number);
+  const barData = [
+    { name: "Recebido", value: totalRevenue,   fill: "#ef4444" },
+    { name: "Pendente", value: pendingRevenue, fill: "#eab308" },
+  ];
 
-    if (!error) {
-      setTables(tables.map(t =>
-        t.table_number === updatedTable.table_number ? updatedTable : t
-      ));
-    }
+  const fmt = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-    setSaving(false);
-    setSelectedTable(null);
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-10 h-10 animate-spin text-gold" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen pb-12">
-      <header className="bg-black/80 border-b border-white/10 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center">
-              <Image
-                src="/assets/images/logo-aew-tbt2.png"
-                alt="TBT2 Allex e Wander"
-                width={140}
-                height={42}
-                priority
-                className="drop-shadow-md"
-              />
-            </div>
-            <form action={logout}>
-              <button type="submit" className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
-                <LogOut className="w-4 h-4" />
-                Sair
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
+    <div className="space-y-8">
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div className="flex items-center gap-3 mb-6">
-          <LayoutDashboard className="w-6 h-6 md:w-8 md:h-8 text-gold" />
-          <h1 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase">Visão Geral</h1>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="w-10 h-10 animate-spin text-gold" />
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-black/60 border border-white/10 rounded-2xl p-6 backdrop-blur-md shadow-2xl">
-                <p className="text-gray-400 font-medium mb-1">Mesas Disponíveis</p>
-                <p className="text-5xl font-bold text-white">{available}</p>
-              </div>
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_20px_rgba(234,179,8,0.1)]">
-                <p className="text-yellow-200/70 font-medium mb-1">Reservadas</p>
-                <p className="text-5xl font-bold text-yellow-500">{reserved}</p>
-              </div>
-              <div className="bg-red-900/40 border border-red-500/30 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_20px_rgba(220,38,38,0.1)]">
-                <p className="text-red-300 font-medium mb-1">Pagas / Vendidas</p>
-                <p className="text-5xl font-bold text-red-500">{paid}</p>
-              </div>
-            </div>
-
-            <div className="mt-8">
-              <h2 className="text-2xl font-bold text-white mb-6 uppercase tracking-wider">Mapa de Mesas</h2>
-              <TableMap tables={tables} onTableClick={handleTableClick} />
-            </div>
-          </>
-        )}
-      </main>
-
-      {selectedTable && (
-        <TableModal
-          table={selectedTable}
-          onClose={() => setSelectedTable(null)}
-          onSave={handleSaveModal}
-          saving={saving}
+      {/* ── STAT CARDS ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={<TableProperties className="w-5 h-5 text-white/60" />}
+          label="Disponíveis"
+          value={available}
+          sub={`de ${TOTAL_TABLES} mesas`}
+          color="border-white/10"
         />
-      )}
+        <StatCard
+          icon={<Clock className="w-5 h-5 text-yellow-400" />}
+          label="Reservadas"
+          value={reserved}
+          sub="aguardando pgto"
+          color="border-yellow-500/30"
+          valueColor="text-yellow-400"
+        />
+        <StatCard
+          icon={<TrendingUp className="w-5 h-5 text-red-400" />}
+          label="Vendidas"
+          value={`${paid} (${soldPct}%)`}
+          sub="mesas confirmadas"
+          color="border-red-500/30"
+          valueColor="text-red-400"
+        />
+        <StatCard
+          icon={<CircleDollarSign className="w-5 h-5 text-gold-light" />}
+          label="Total Arrecadado"
+          value={fmt(totalRevenue)}
+          sub={`${fmt(pendingRevenue)} pendente`}
+          color="border-gold/30"
+          valueColor="text-gold-light"
+          small
+        />
+      </div>
+
+      {/* ── CHARTS ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* Donut — Status das mesas */}
+        <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+          <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
+            Status das Mesas
+          </h3>
+          {pieData.length === 0 ? (
+            <p className="text-center text-gray-500 py-16 text-sm">Sem dados ainda</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={95}
+                  paddingAngle={3}
+                  dataKey="value"
+                >
+                  {pieData.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} stroke="transparent" />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{ background: "#130000", border: "1px solid #ffffff22", borderRadius: 8 }}
+                  labelStyle={{ color: "#fff" }}
+                  itemStyle={{ color: "#ccc" }}
+                  formatter={(v: number) => [`${v} mesas`, ""]}
+                />
+                <Legend
+                  iconType="circle"
+                  iconSize={8}
+                  formatter={(value) => <span style={{ color: "#aaa", fontSize: 12 }}>{value}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        {/* Bar — Receita */}
+        <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+          <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
+            Receita (R$)
+          </h3>
+          {totalRevenue === 0 && pendingRevenue === 0 ? (
+            <p className="text-center text-gray-500 py-16 text-sm">Sem valores registrados ainda</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={barData} barSize={48}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                <XAxis dataKey="name" tick={{ fill: "#aaa", fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#aaa", fontSize: 11 }} axisLine={false} tickLine={false}
+                  tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} />
+                <Tooltip
+                  contentStyle={{ background: "#130000", border: "1px solid #ffffff22", borderRadius: 8 }}
+                  itemStyle={{ color: "#ccc" }}
+                  formatter={(v: number) => [fmt(v), ""]}
+                />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                  {barData.map((entry, i) => (
+                    <Cell key={i} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+      </div>
+
+      {/* ── PROGRESS BAR ── */}
+      <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider">Ocupação Geral</h3>
+          <span className="text-sm font-bold text-white">{soldPct}% vendido</span>
+        </div>
+        <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden">
+          <div
+            className="h-4 rounded-full bg-gradient-to-r from-red-700 to-red-500 transition-all duration-700"
+            style={{ width: `${soldPct}%` }}
+          />
+        </div>
+        <div className="flex justify-between text-xs text-gray-500 mt-2">
+          <span>{paid} vendidas</span>
+          <span>{available} disponíveis</span>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+function StatCard({
+  icon, label, value, sub, color, valueColor = "text-white", small = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  sub: string;
+  color: string;
+  valueColor?: string;
+  small?: boolean;
+}) {
+  return (
+    <div className={`bg-black/50 border ${color} rounded-2xl p-5 backdrop-blur-md flex flex-col gap-2`}>
+      <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        {icon}
+        {label}
+      </div>
+      <p className={`font-extrabold ${small ? "text-xl" : "text-4xl"} ${valueColor} leading-none`}>
+        {value}
+      </p>
+      <p className="text-xs text-gray-500">{sub}</p>
     </div>
   );
 }
