@@ -37,7 +37,7 @@ export function TableMap({ tables, onTableClick }: TableMapProps) {
       <button
         key={num}
         onClick={() => onTableClick(table)}
-        className={`relative flex items-center justify-center w-12 h-12 rounded-lg border-2 font-bold text-sm transition-all active:scale-95 ${bgClass} ${isAvailable ? "table-available" : ""} ${extraClass}`}
+        className={`relative flex items-center justify-center w-12 h-12 rounded-lg border-2 font-bold text-sm transition-all active:scale-95 cursor-pointer ${bgClass} ${isAvailable ? "table-available" : ""} ${extraClass}`}
       >
         {String(num).padStart(2, '0')}
         {table.status !== 'available' && (

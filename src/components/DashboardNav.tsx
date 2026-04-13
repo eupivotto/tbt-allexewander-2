@@ -20,7 +20,7 @@ export function DashboardNav() {
           <Link
             key={href}
             href={href}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
               isActive
                 ? "bg-gold text-deep-red shadow"
                 : "text-gray-400 hover:text-white hover:bg-white/5"

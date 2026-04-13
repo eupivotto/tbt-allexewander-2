@@ -72,7 +72,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-gold/10 text-sm font-bold text-deep-red bg-gold hover:bg-gold-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-gold transition-all duration-200 disabled:opacity-70"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-gold/10 text-sm font-bold text-deep-red bg-gold hover:bg-gold-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-gold transition-all duration-200 disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed"
             >
               {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar Painel"}
             </button>

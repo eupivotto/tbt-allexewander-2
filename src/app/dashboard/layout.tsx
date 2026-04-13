@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               className="drop-shadow-md"
             />
             <form action={logout}>
-              <button type="submit" className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+              <button type="submit" className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
                 <LogOut className="w-4 h-4" />
                 Sair
               </button>

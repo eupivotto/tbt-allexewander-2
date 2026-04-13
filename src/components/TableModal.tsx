@@ -41,7 +41,7 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
           </h3>
           <button 
             onClick={onClose}
-            className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition"
+            className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -169,7 +169,7 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
             <button
               type="submit"
               disabled={saving}
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-lg shadow-gold/10 text-deep-red font-bold bg-gold hover:bg-gold-light focus:outline-none focus:ring-2 focus:ring-gold transition-all duration-200 disabled:opacity-70"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-lg shadow-gold/10 text-deep-red font-bold bg-gold hover:bg-gold-light focus:outline-none focus:ring-2 focus:ring-gold transition-all duration-200 disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed"
             >
               {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
               {saving ? "Salvando..." : "Salvar Alterações"}
