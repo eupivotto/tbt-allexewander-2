@@ -15,6 +15,7 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
     buyer_name: table.buyer_name || "",
     buyer_phone: table.buyer_phone || "",
     price: table.price ?? undefined,
+    extra_chair_status: table.extra_chair_status ?? undefined,
     extra_chair_name: table.extra_chair_name || "",
     extra_chair_phone: table.extra_chair_phone || "",
     extra_chair_price: table.extra_chair_price ?? undefined,
@@ -122,6 +123,36 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
             <div className="flex items-center gap-2 text-blue-300 text-sm font-semibold">
               <Armchair className="w-4 h-4" />
               Cadeira Extra
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">Status da Cadeira</label>
+              <div className="relative">
+                <select
+                  value={formData.extra_chair_status ?? ""}
+                  onChange={(e) => setFormData({ ...formData, extra_chair_status: e.target.value === "" ? undefined : e.target.value as TableStatus })}
+                  className="block w-full px-4 py-3 pr-10 bg-[#1a0a0a] border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer"
+                  style={{ colorScheme: "dark" }}
+                >
+                  <option value="" style={{ background: "#1a0a0a", color: "#6b7280" }}>— Sem cadeira extra —</option>
+                  <option value="available" style={{ background: "#1a0a0a", color: "#fff" }}>Disponível</option>
+                  <option value="reserved" style={{ background: "#1a0a0a", color: "#eab308" }}>Reservada — Aguardando Pagamento</option>
+                  <option value="paid" style={{ background: "#1a0a0a", color: "#f87171" }}>Paga / Vendida</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+              {formData.extra_chair_status === 'reserved' && (
+                <p className="text-xs text-yellow-500 flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 rounded-sm bg-yellow-500" /> Cadeira reservada, aguardando pagamento.
+                </p>
+              )}
+              {formData.extra_chair_status === 'paid' && (
+                <p className="text-xs text-red-400 flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 rounded-sm bg-red-500" /> Cadeira marcada como paga.
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">

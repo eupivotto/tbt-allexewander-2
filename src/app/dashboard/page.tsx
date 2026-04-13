@@ -19,7 +19,7 @@ export default function OverviewPage() {
     async function fetchTables() {
       const { data, error } = await supabase
         .from("tables")
-        .select("table_number, status, price, extra_chair_price");
+        .select("table_number, status, price, extra_chair_status, extra_chair_price");
       if (!error && data) setTables(data as TableData[]);
       setLoading(false);
     }
@@ -40,8 +40,16 @@ export default function OverviewPage() {
   const reserved  = tables.filter(t => t.status === "reserved").length;
   const paid      = tables.filter(t => t.status === "paid").length;
 
-  const totalRevenue  = tables.filter(t => t.status === "paid").reduce((s, t) => s + (t.price ?? 0) + (t.extra_chair_price ?? 0), 0);
-  const pendingRevenue = tables.filter(t => t.status === "reserved").reduce((s, t) => s + (t.price ?? 0) + (t.extra_chair_price ?? 0), 0);
+  const totalRevenue  = tables.reduce((s, t) => {
+    const mesa  = t.status === "paid"               ? (t.price ?? 0)            : 0;
+    const chair = t.extra_chair_status === "paid"   ? (t.extra_chair_price ?? 0) : 0;
+    return s + mesa + chair;
+  }, 0);
+  const pendingRevenue = tables.reduce((s, t) => {
+    const mesa  = t.status === "reserved"               ? (t.price ?? 0)            : 0;
+    const chair = t.extra_chair_status === "reserved"   ? (t.extra_chair_price ?? 0) : 0;
+    return s + mesa + chair;
+  }, 0);
   const soldPct = TOTAL_TABLES > 0 ? Math.round((paid / TOTAL_TABLES) * 100) : 0;
 
   const pieData = [

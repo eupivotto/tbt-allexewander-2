@@ -8,6 +8,7 @@ export interface TableData {
   buyer_name?: string;
   buyer_phone?: string;
   price?: number;
+  extra_chair_status?: TableStatus;
   extra_chair_name?: string;
   extra_chair_phone?: string;
   extra_chair_price?: number;

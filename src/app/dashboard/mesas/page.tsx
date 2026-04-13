@@ -16,7 +16,7 @@ export default function MesasPage() {
     async function fetchTables() {
       const { data, error } = await supabase
         .from("tables")
-        .select("table_number, status, buyer_name, buyer_phone, price, extra_chair_name, extra_chair_phone, extra_chair_price")
+        .select("table_number, status, buyer_name, buyer_phone, price, extra_chair_status, extra_chair_name, extra_chair_phone, extra_chair_price")
         .order("table_number");
       if (!error && data) setTables(data as TableData[]);
       setLoading(false);
@@ -43,6 +43,7 @@ export default function MesasPage() {
         buyer_name: updatedTable.buyer_name ?? null,
         buyer_phone: updatedTable.buyer_phone ?? null,
         price: updatedTable.price ?? null,
+        extra_chair_status: updatedTable.extra_chair_status ?? null,
         extra_chair_name: updatedTable.extra_chair_name ?? null,
         extra_chair_phone: updatedTable.extra_chair_phone ?? null,
         extra_chair_price: updatedTable.extra_chair_price ?? null,
