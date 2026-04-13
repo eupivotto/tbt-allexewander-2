@@ -8,6 +8,9 @@ export interface TableData {
   buyer_name?: string;
   buyer_phone?: string;
   price?: number;
+  extra_chair_name?: string;
+  extra_chair_phone?: string;
+  extra_chair_price?: number;
 }
 
 interface TableMapProps {
@@ -23,6 +26,7 @@ export function TableMap({ tables, onTableClick }: TableMapProps) {
     const table = getTable(num);
     const isReserved = table.status === 'reserved';
     const isPaid = table.status === 'paid';
+    const hasExtraChair = !!table.extra_chair_price || !!table.extra_chair_name;
 
     const isAvailable = table.status === 'available';
     let bgClass = "bg-white/10 hover:bg-white/20 border-white/20 text-white";
@@ -41,6 +45,14 @@ export function TableMap({ tables, onTableClick }: TableMapProps) {
             <div className="w-full h-[2px] bg-current rotate-45 absolute opacity-40" />
             <div className="w-full h-[2px] bg-current -rotate-45 absolute opacity-40" />
           </div>
+        )}
+        {hasExtraChair && (
+          <span
+            title="Cadeira extra"
+            className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-blue-400 border border-[#0a0000] flex items-center justify-center text-[7px] font-black text-white pointer-events-none"
+          >
+            +
+          </span>
         )}
       </button>
     );

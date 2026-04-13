@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TableData, TableStatus } from "@/components/TableMap";
-import { X, Save, ChevronDown, Loader2, Phone } from "lucide-react";
+import { X, Save, ChevronDown, Loader2, Phone, Armchair } from "lucide-react";
 
 interface TableModalProps {
   table: TableData;
@@ -15,6 +15,9 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
     buyer_name: table.buyer_name || "",
     buyer_phone: table.buyer_phone || "",
     price: table.price || 0,
+    extra_chair_name: table.extra_chair_name || "",
+    extra_chair_phone: table.extra_chair_phone || "",
+    extra_chair_price: table.extra_chair_price || 0,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -112,6 +115,54 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
               min="0"
               step="0.01"
             />
+          </div>
+
+          {/* ── Cadeira Extra ── */}
+          <div className="border border-blue-500/20 rounded-xl p-4 space-y-4 bg-blue-500/5">
+            <div className="flex items-center gap-2 text-blue-300 text-sm font-semibold">
+              <Armchair className="w-4 h-4" />
+              Cadeira Extra
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">Nome (cadeira extra)</label>
+              <input
+                type="text"
+                value={formData.extra_chair_name}
+                onChange={(e) => setFormData({ ...formData, extra_chair_name: e.target.value })}
+                className="block w-full px-4 py-3 bg-[#1a0a0a] border border-white/20 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                placeholder="Ex: Maria Silva"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">Telefone (cadeira extra)</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                  <Phone className="h-4 w-4" />
+                </div>
+                <input
+                  type="tel"
+                  value={formData.extra_chair_phone}
+                  onChange={(e) => setFormData({ ...formData, extra_chair_phone: e.target.value })}
+                  className="block w-full pl-10 pr-4 py-3 bg-[#1a0a0a] border border-white/20 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                  placeholder="(00) 00000-0000"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">Valor da Cadeira Extra (R$)</label>
+              <input
+                type="number"
+                value={formData.extra_chair_price}
+                onChange={(e) => setFormData({ ...formData, extra_chair_price: Number(e.target.value) })}
+                className="block w-full px-4 py-3 bg-[#1a0a0a] border border-white/20 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+            </div>
           </div>
 
           <div className="pt-4">

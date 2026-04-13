@@ -16,7 +16,7 @@ export default function MesasPage() {
     async function fetchTables() {
       const { data, error } = await supabase
         .from("tables")
-        .select("table_number, status, buyer_name, buyer_phone, price")
+        .select("table_number, status, buyer_name, buyer_phone, price, extra_chair_name, extra_chair_phone, extra_chair_price")
         .order("table_number");
       if (!error && data) setTables(data as TableData[]);
       setLoading(false);
@@ -43,6 +43,9 @@ export default function MesasPage() {
         buyer_name: updatedTable.buyer_name ?? null,
         buyer_phone: updatedTable.buyer_phone ?? null,
         price: updatedTable.price ?? null,
+        extra_chair_name: updatedTable.extra_chair_name ?? null,
+        extra_chair_phone: updatedTable.extra_chair_phone ?? null,
+        extra_chair_price: updatedTable.extra_chair_price ?? null,
       })
       .eq("table_number", updatedTable.table_number);
 
@@ -77,6 +80,10 @@ export default function MesasPage() {
           <span className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded border-2 border-red-500/60 bg-red-900/40 inline-block" />
             <span className="text-red-300">Paga</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3.5 h-3.5 rounded-full bg-blue-400 flex items-center justify-center text-[7px] font-black text-white inline-flex">+</span>
+            <span className="text-blue-300">Cadeira extra</span>
           </span>
         </div>
       </div>
