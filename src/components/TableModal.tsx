@@ -14,10 +14,10 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
     ...table,
     buyer_name: table.buyer_name || "",
     buyer_phone: table.buyer_phone || "",
-    price: table.price || 0,
+    price: table.price ?? undefined,
     extra_chair_name: table.extra_chair_name || "",
     extra_chair_phone: table.extra_chair_phone || "",
-    extra_chair_price: table.extra_chair_price || 0,
+    extra_chair_price: table.extra_chair_price ?? undefined,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -108,8 +108,8 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
             <label className="text-sm font-medium text-gray-300">Valor Pago (R$)</label>
             <input
               type="number"
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+              value={formData.price ?? ""}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value === "" ? undefined : Number(e.target.value) })}
               className="block w-full px-4 py-3 bg-[#1a0a0a] border border-white/20 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 transition-all"
               placeholder="0.00"
               min="0"
@@ -155,8 +155,8 @@ export function TableModal({ table, onClose, onSave, saving = false }: TableModa
               <label className="text-sm font-medium text-gray-300">Valor da Cadeira Extra (R$)</label>
               <input
                 type="number"
-                value={formData.extra_chair_price}
-                onChange={(e) => setFormData({ ...formData, extra_chair_price: Number(e.target.value) })}
+                value={formData.extra_chair_price ?? ""}
+                onChange={(e) => setFormData({ ...formData, extra_chair_price: e.target.value === "" ? undefined : Number(e.target.value) })}
                 className="block w-full px-4 py-3 bg-[#1a0a0a] border border-white/20 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                 placeholder="0.00"
                 min="0"
